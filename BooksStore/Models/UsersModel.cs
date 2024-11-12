@@ -1,22 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BooksStore.Models {
 
 	public class UsersModel : BaseModel {
+
+		[Column ( TypeName = "varchar(200)" )]
 		public string Name { get; set; }
 
+		[Column ( TypeName = "varchar(200)" )]
 		public string SecondName { get; set; }
 
 		[DataType ( DataType.Date )]
 		[DisplayFormat ( DataFormatString = "{0:dd:MM:yyyy}" , ApplyFormatInEditMode = true )]
-		public DataType Birtday { get; set; }
+		public DateTime Birtday { get; set; }
 
+		[Column ( TypeName = "varchar(200)" )]
 		[DataType ( DataType.EmailAddress )]
-		public DataType Email { get; set; }
+		public string Email { get; set; }
 
+		[Column ( TypeName = "varchar(255)" )]
 		[DataType ( DataType.Password )]
-		public DataType HashPassword { get; set; }
+		public string HashPassword { get; set; }
 
-		public ICollection<OrdersModel> Orders { get; set; }
+		public virtual ICollection<OrdersModel> Orders { get; set; }
 	}
 }

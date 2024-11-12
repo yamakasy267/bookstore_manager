@@ -14,5 +14,7 @@ namespace BooksStore {
 		public DbSet<GenreBooksModel> GenreBooks { get; set; }
 		public DbSet<AuthorModel> Author { get; set; }
 		public DbSet<GenreModel> Genre { get; set; }
+		public DbSet<OrdersBooksModel> OrdersBooks { get; set; }
+		public DbSet<OrdersModel> Orders { get; set; }
 	}
 }
