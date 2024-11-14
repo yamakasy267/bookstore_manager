@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HotChocolate.AspNetCore.Voyager;
-using BooksStore.Controllers.Books;
-using BooksStore.Controllers.Author;
 using BooksStore.Controllers;
 
 namespace BooksStore
@@ -25,8 +23,7 @@ namespace BooksStore
             services.AddGraphQLServer()
                 .RegisterDbContextFactory<AppDbContext>()
                 .AddQueryType<Query>()
-                .AddMutationType<MutationBooks>()
-                .AddMutationType<MutationAuthor>()
+                .AddMutationType<Mutation>()
                 .AddProjections()
                 .AddSorting()
                 .AddFiltering();
