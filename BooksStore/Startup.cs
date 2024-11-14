@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using BooksStore.Controllers;
+using HotChocolate.AspNetCore.Voyager;
 
 namespace BooksStore {
 
@@ -11,11 +13,18 @@ namespace BooksStore {
 		public IConfiguration Configuration { get; }
 
 		public void ConfigureServices ( IServiceCollection services ) {
-			services.AddDbContext<AppDbContext> ( options =>
+			services.AddDbContextFactory<AppDbContext> ( options =>
 				options.UseNpgsql ( Configuration.GetConnectionString ( "DefaultConnection" ) ) );
 			services.AddControllers ();
 			services.AddEndpointsApiExplorer ();
 			services.AddSwaggerGen ();
+			services.AddGraphQLServer ()
+				.RegisterDbContextFactory<AppDbContext> ()
+				.AddQueryType<Query> ()
+				.AddMutationType<Mutation> ()
+				.AddProjections ()
+				.AddSorting ()
+				.AddFiltering ();
 		}
 
 		public void Configure ( IApplicationBuilder app , IWebHostEnvironment env ) {
@@ -27,9 +36,8 @@ namespace BooksStore {
 			app.UseStaticFiles ();
 			app.UseRouting ();
 			app.UseAuthorization ();
-
 			app.UseEndpoints ( endpoints => {
-				endpoints.MapControllers ();
+				endpoints.MapGraphQL ( "/api" );
 			} );
 		}
 	}
