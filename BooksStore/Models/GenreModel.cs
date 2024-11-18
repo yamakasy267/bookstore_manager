@@ -6,5 +6,8 @@ namespace BooksStore.Models {
 
 		[Column ( TypeName = "varchar(200)" )]
 		public string Name { get; set; }
+
+		[GraphQLIgnore]
+		public ICollection<BooksModel> Books { get; set; }
 	}
 }

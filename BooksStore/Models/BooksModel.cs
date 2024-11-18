@@ -8,12 +8,21 @@ namespace BooksStore.Models {
 		[Column ( TypeName = "varchar(200)" )]
 		public string Name { get; set; }
 
-		public AuthorModel Author { get; set; }
-
 		public float Price { get; set; }
 
 		[DataType ( DataType.Date )]
 		[DisplayFormat ( DataFormatString = "{0:dd:MM:yyyy}" , ApplyFormatInEditMode = true )]
-		public DateTime DatePublication { get; set; }
+		public DateOnly DatePublication { get; set; }
+
+		public int AuthorId { get; set; }
+
+		[GraphQLIgnore]
+		public AuthorModel Author { get; set; }
+
+		[GraphQLIgnore]
+		public ICollection<GenreModel> Genre { get; set; }
+
+		[GraphQLIgnore]
+		public ICollection<OrdersModel> Orders { get; set; }
 	}
 }
