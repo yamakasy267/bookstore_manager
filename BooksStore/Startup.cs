@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using HotChocolate.AspNetCore.Voyager;
 using BooksStore.Controllers;
 
 namespace BooksStore
