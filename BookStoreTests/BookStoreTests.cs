@@ -1,64 +1,74 @@
-using BooksStore;
+﻿using BooksStore;
 using BooksStore.Controllers;
 using BooksStore.Models;
 using HotChocolate;
 using HotChocolate.Execution;
-using HotChocolate.Server;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection.Metadata;
-using Xunit.Abstractions;
-using Xunit;
-using System.Runtime.CompilerServices;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using HotChocolate.Stitching.Requests;
 using HotChocolate.Execution.Configuration;
-using CookieCrumble;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit.Abstractions;
 
-namespace BookStoreTests
-{
-    public class BookStoreTests
-    {
-        private readonly ITestOutputHelper output;
-        private DbContextOptions<AppDbContext> _contextOptions;
+namespace BookStoreTests {
 
-        public BookStoreTests(ITestOutputHelper output)
-        {
-            this.output = output;
-            _contextOptions = new DbContextOptionsBuilder<AppDbContext>()
-        .UseInMemoryDatabase("TestDataBase")
-        .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-        .Options;
+	public class BookStoreTests {
+		private IServiceCollection services;
 
-            using var context = new AppDbContext(_contextOptions);
+		/// <summary>
+		/// Регистрируем сервис БД и создаем начальные данные в ней
+		/// </summary>
+		/// <param name="output"></param>
+		public BookStoreTests ( ITestOutputHelper output ) {
+			services = new ServiceCollection ();
+			services.AddDbContextFactory<AppDbContext> ( option => option.UseInMemoryDatabase ( "TestDataBase" ) );
 
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+			var provider = services.BuildServiceProvider ();
+			var context = provider.GetRequiredService<AppDbContext> ();
+			context.Database.EnsureDeleted ();
+			context.Database.EnsureCreated ();
 
-            context.AddRange(
-                new AuthorModel { Id = 1, Name = "Ilya", Birthday = new DateOnly(2000, 01, 23) },
-                new BooksModel { Id = 1, Name = "Bulya", AuthorId = 1, DatePublication = new DateOnly(2023, 09, 14), Price = 123 });
+			context.AddRange (
+				new AuthorModel { Id = 1 , Name = "Ilya" , Birthday = new DateOnly ( 2000 , 01 , 23 ) } ,
+				new BooksModel { Id = 1 , Name = "Bulya" , AuthorId = 1 , DatePublication = new DateOnly ( 2023 , 09 , 14 ) , Price = 123 } ,
+				new GenreModel { Id = 1 , Name = "Scrim" } );
 
-            context.SaveChanges();
-        }
+			context.SaveChanges ();
+		}
 
-        [Fact]
-        public async Task QueryTest()
-        {
-            var servise = new ServiceCollection();
-            servise.AddDbContextFactory<AppDbContext>(option => option.UseInMemoryDatabase("TestDataBase"));
+		/// <summary>
+		/// Имитируем работу Graphql server и посылаем query запрос
+		/// </summary>
+		/// <returns></returns>
+		[Fact]
+		public async Task QueryTest () {
+			var result = await services.AddGraphQLServer ()
+				 .RegisterDbContextFactory<AppDbContext> ()
+				 .AddQueryType<Query> ()
+				 .AddProjections ()
+				 .AddSorting ()
+				 .AddFiltering ()
+				 .ExecuteRequestAsync ( "{books{name, datePublication, }}" );
+			Assert.True ( result.ToJson ().Contains ( "Bulya" ) );
+		}
 
-            var result = await servise.AddGraphQLServer()
-                 .RegisterDbContextFactory<AppDbContext>()
-                 .AddQueryType<Query>()
-                 .AddProjections()
-                 .AddSorting()
-                 .AddFiltering()
-                 .ExecuteRequestAsync("{books{name}}");
-            output.WriteLine(result.ToJson());
-        }
-    }
+		/// <summary>
+		/// Создаем экземпляры books и записываем в БД
+		/// </summary>
+		/// <returns></returns>
+		[Fact]
+		public async Task MutationTest () {
+			var mutation = new Mutation ();
+			var provider = services.BuildServiceProvider ();
+			var context = provider.GetRequiredService<AppDbContext> ();
+			var book = new BooksModel () {
+				AuthorId = 1 ,
+				Id = 2 ,
+				DatePublication = new DateOnly ( 2000 , 05 , 01 ) ,
+				Price = 432 ,
+				Name = "TestMutation"
+			};
+			var genre = new List<string> () { "Scrim" };
+			var result = await mutation.AddBookAsync ( book , context , genre );
+			Assert.Equal ( "TestMutation" , context.Books.Find ( 2 ).Name );
+		}
+	}
 }
