@@ -4,9 +4,9 @@ namespace BooksStore.Controllers
 {
     public partial class Mutation
     {
-        public async Task<AuthorModel> AddAuthor(AuthorModel input, [Service] AppDbContext context)
+        public async Task<Author> AddAuthor(Author input, [Service] AppDbContext context)
         {
-            var author = new AuthorModel
+            var author = new Author
             {
                 Name = input.Name,
                 Birthday = input.Birthday,
@@ -17,7 +17,7 @@ namespace BooksStore.Controllers
             return author;
         }
 
-        public async Task<AuthorModel> UpdateAuthor([Service] AppDbContext context, UpdateAuthor input)
+        public async Task<Author> UpdateAuthor([Service] AppDbContext context, UpdateAuthor input)
         {
             var author = context.Author.FirstOrDefault(x => x.Id == input.id);
             if (author == null)

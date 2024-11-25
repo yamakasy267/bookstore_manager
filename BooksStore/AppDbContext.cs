@@ -11,10 +11,10 @@ namespace BooksStore
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
-        public DbSet<UsersModel> Users { get; set; }
-        public DbSet<BooksModel> Books { get; set; }
-        public DbSet<AuthorModel> Author { get; set; }
-        public DbSet<GenreModel> Genre { get; set; }
-        public DbSet<OrdersModel> Orders { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Author> Author { get; set; }
+        public DbSet<Genre> Genre { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }
