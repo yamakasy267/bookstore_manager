@@ -5,13 +5,13 @@ namespace BooksStore.Controllers {
 
 	public partial class Mutation {
 
-		public async Task<BooksModel> AddBookAsync ( BooksModel input , [Service] AppDbContext context , ICollection<string> genres ) {
+		public async Task<BooksModel> AddBookAsync ( BooksModel input , [Service] AppDbContext context , ICollection<int> genres ) {
 			var book = new BooksModel {
 				Name = input.Name ,
 				DatePublication = input.DatePublication ,
 				Price = input.Price ,
 				Author = context.Author.Find ( input.AuthorId ) ,
-				Genre = context.Genre.Where ( g => genres.Contains ( g.Name ) ).ToList () ,
+				Genre = context.Genre.Where ( g => genres.Contains ( g.Id ) ).ToList () ,
 			};
 			if ( book.Author is null )
 				throw new ArgumentException ( "Wrong argument AuthorId" );
