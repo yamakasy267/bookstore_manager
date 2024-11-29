@@ -35,6 +35,9 @@ namespace BooksStore.Controllers
         }
     }
 
+    /// <summary>
+    /// класс для получение данных в MutationOrder с игнорированием ненужных полей
+    /// </summary>
     public class OrderIn : Order
     {
         [GraphQLIgnore]

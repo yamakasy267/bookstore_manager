@@ -25,7 +25,7 @@ namespace BooksStore.Controllers
             return book;
         }
 
-        public async Task<Book> UpdateBookAsync([Service] AppDbContext context, UpdateBook input)
+        public async Task<Book> UpdateBookAsync([Service] AppDbContext context, UpdateBooks input)
         {
             var book = context.Books.Find(input.Id);
             if (book == null)
@@ -33,7 +33,7 @@ namespace BooksStore.Controllers
 
             book.Price = input.Price == default ? book.Price : input.Price;
             book.Name = input.Name == default ? book.Name : input.Name;
-            book.DatePublication = input.DatePublication == default ? book.DatePublication : input.DatePublication;
+            book.DatePublication = input.DatePublication == default ? book.DatePublication : (DateOnly)input.DatePublication;
             if (book.Author != default)
             {
                 var author = context.Author.Find(input.AuthorId);
@@ -59,14 +59,25 @@ namespace BooksStore.Controllers
             return false;
         }
 
+        /// <summary>
+        /// Класс для получение данных в методе update с необязательными параметрами
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="datePublication"></param>
+        /// <param name="price"></param>
+        /// <param name="author"></param>
         public record class UpdateBooks(
-            int id,
-            string? name = null,
-            string? datePublication = default,
-            float price = default,
-            int author = default);
+            int Id,
+            string? Name = null,
+            DateOnly? DatePublication = default,
+            float Price = default,
+            int AuthorId = default);
     }
 
+    /// <summary>
+    /// класс для получение данных в MutationBook с игнорирование ненужных данных
+    /// </summary>
     public class BookIn : Book
     {
         [GraphQLIgnore]
