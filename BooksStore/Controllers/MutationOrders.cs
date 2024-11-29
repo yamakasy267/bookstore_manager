@@ -4,7 +4,7 @@ namespace BooksStore.Controllers
 {
     public partial class Mutation
     {
-        public async Task<Order> AddOrder(Order input, [Service] AppDbContext context, ICollection<int> books)
+        public async Task<Order> AddOrder(OrderIn input, [Service] AppDbContext context, ICollection<int> books)
         {
             var order = new Order
             {
@@ -33,5 +33,17 @@ namespace BooksStore.Controllers
             }
             return false;
         }
+    }
+
+    public class OrderIn : Order
+    {
+        [GraphQLIgnore]
+        public new User User { get; set; }
+
+        [GraphQLIgnore]
+        public new int BooksCount { get; set; }
+
+        [GraphQLIgnore]
+        public new ICollection<Book> Books { get; set; }
     }
 }

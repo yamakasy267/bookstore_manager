@@ -5,7 +5,7 @@ namespace BooksStore.Controllers
 {
     public partial class Mutation
     {
-        public async Task<Book> AddBookAsync(Book input, [Service] AppDbContext context, ICollection<int> genres)
+        public async Task<Book> AddBookAsync(BookIn input, [Service] AppDbContext context, ICollection<int> genres)
         {
             var book = new Book
             {
@@ -25,18 +25,18 @@ namespace BooksStore.Controllers
             return book;
         }
 
-        public async Task<Book> UpdateBookAsync([Service] AppDbContext context, UpdateBooks input)
+        public async Task<Book> UpdateBookAsync([Service] AppDbContext context, UpdateBook input)
         {
-            var book = context.Books.Find(input.id);
+            var book = context.Books.Find(input.Id);
             if (book == null)
                 throw new ArgumentException("Wrong argument id book");
 
-            book.Price = input.price == default ? book.Price : input.price;
-            book.Name = input.name == default ? book.Name : input.name;
-            book.DatePublication = input.datePublication == default ? book.DatePublication : DateOnly.Parse(input.datePublication);
+            book.Price = input.Price == default ? book.Price : input.Price;
+            book.Name = input.Name == default ? book.Name : input.Name;
+            book.DatePublication = input.DatePublication == default ? book.DatePublication : input.DatePublication;
             if (book.Author != default)
             {
-                var author = context.Author.Find(input.author);
+                var author = context.Author.Find(input.AuthorId);
                 if (author == null)
                     throw new ArgumentException("Wrong argument id author");
                 book.Author = author;
@@ -65,5 +65,14 @@ namespace BooksStore.Controllers
             string? datePublication = default,
             float price = default,
             int author = default);
+    }
+
+    public class BookIn : Book
+    {
+        [GraphQLIgnore]
+        public new Author Author { get; set; }
+
+        [GraphQLIgnore]
+        public new ICollection<Genre> Genre { get; set; }
     }
 }

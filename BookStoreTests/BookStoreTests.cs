@@ -63,7 +63,7 @@ namespace BookStoreTests
             var mutation = new Mutation();
             var provider = services.BuildServiceProvider();
             var context = provider.GetRequiredService<AppDbContext>();
-            var book = new Book()
+            var book = new BookIn()
             {
                 AuthorId = 1,
                 Id = 2,

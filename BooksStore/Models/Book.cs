@@ -16,10 +16,8 @@ namespace BooksStore.Models
 
         public int AuthorId { get; set; }
 
-        [GraphQLIgnore]
         public Author Author { get; set; }
 
-        [GraphQLIgnore]
         public ICollection<Genre> Genre { get; set; }
 
         [GraphQLIgnore]

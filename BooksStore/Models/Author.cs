@@ -15,6 +15,7 @@ namespace BooksStore.Models
         [DataType(DataType.Text)]
         public string? Biografy { get; set; }
 
+        [GraphQLIgnore]
         public virtual ICollection<Book> Books { get; set; }
     }
 }
